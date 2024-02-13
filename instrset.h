@@ -214,7 +214,7 @@ constexpr int V_DC = -256;
 // Define interface to cpuid instruction.
 // input:  functionnumber = leaf (eax), ecxleaf = subleaf(ecx)
 // output: output[0] = eax, output[1] = ebx, output[2] = ecx, output[3] = edx
-static inline void cpuid(int output[4], int functionnumber, int ecxleaf = 0) {
+static inline void cpuid(int output[4], int functionnumber, int ecxleaf = 0) noexcept {
 #if defined(__GNUC__) || defined(__clang__)           // use inline assembly, Gnu/AT&T syntax
     int a, b, c, d;
     __asm("cpuid" : "=a"(a), "=b"(b), "=c"(c), "=d"(d) : "a"(functionnumber), "c"(ecxleaf) : );
@@ -245,11 +245,11 @@ static inline void cpuid(int output[4], int functionnumber, int ecxleaf = 0) {
 #if INSTRSET >= 6   // SSE4.2
 // The popcnt instruction is not officially part of the SSE4.2 instruction set,
 // but available in all known processors with SSE4.2
-static inline uint32_t vml_popcnt(uint32_t a) {
+static inline uint32_t vml_popcnt(uint32_t a) noexcept {
     return (uint32_t)_mm_popcnt_u32(a);  // Intel intrinsic. Supported by gcc and clang
 }
 #ifdef __x86_64__
-static inline int64_t vml_popcnt(uint64_t a) {
+static inline int64_t vml_popcnt(uint64_t a) noexcept {
     return _mm_popcnt_u64(a);            // Intel intrinsic.
 }
 #else   // 32 bit mode
@@ -293,13 +293,13 @@ static inline uint32_t bit_scan_forward(uint64_t a) {
     return bit_scan_forward(hi) + 32;
 }
 #else  // MS compatible compilers under Windows
-static inline uint32_t bit_scan_forward(uint32_t a) {
+static inline uint32_t bit_scan_forward(uint32_t a) noexcept {
     unsigned long r;
     _BitScanForward(&r, a);            // defined in intrin.h for MS and Intel compilers
     return r;
 }
 #ifdef __x86_64__
-static inline uint32_t bit_scan_forward(uint64_t a) {
+static inline uint32_t bit_scan_forward(uint64_t a) noexcept {
     unsigned long r;
     _BitScanForward64(&r, a);          // defined in intrin.h for MS and Intel compilers
     return (uint32_t)r;
@@ -341,13 +341,13 @@ static inline uint32_t bit_scan_reverse(uint64_t a) {
 }
 #endif
 #else  // MS compatible compilers under Windows
-static inline uint32_t bit_scan_reverse(uint32_t a) {
+static inline uint32_t bit_scan_reverse(uint32_t a) noexcept {
     unsigned long r;
     _BitScanReverse(&r, a);            // defined in intrin.h for MS compatible compilers
     return r;
 }
 #ifdef __x86_64__
-static inline uint32_t bit_scan_reverse(uint64_t a) {
+static inline uint32_t bit_scan_reverse(uint64_t a) noexcept {
     unsigned long r;
     _BitScanReverse64(&r, a);          // defined in intrin.h for MS compatible compilers
     return r;
